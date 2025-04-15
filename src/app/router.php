@@ -1,5 +1,4 @@
 <?php
-
 function router($method, $uri, $routes) {
     $uri = urldecode($uri);
     $uri_segments = explode('/', trim($uri, '/'));
@@ -31,17 +30,9 @@ function router($method, $uri, $routes) {
     gestisci_richiesta_non_valida();
 }
 
-function gestisci_elenco_articoli() {
-    echo "Elenco degli articoli";
-}
-
-function gestisci_articoli_per_categoria($categoria) {
-    echo "Articoli nella categoria: " . $categoria;
-}
-
-function gestisci_articoli_per_sottocategoria($categoria, $sottocategoria) {
-    echo "Articoli in " . $categoria . "/" . $sottocategoria;
-}
+function gestisci_elenco_articoli() { include_once "articoli.php"; }
+function gestisci_articoli_per_categoria($categoria) { include_once "articoli.php"; }
+function gestisci_articoli_per_sottocategoria($categoria, $sottocategoria) { include_once "articoli.php"; }
 
 function gestisci_articolo($categoria, $sottocategoria, $slug) {
     echo "Articolo: " . $categoria . "/" . $sottocategoria . "/" . $slug;

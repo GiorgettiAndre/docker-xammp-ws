@@ -1,15 +1,4 @@
 <?php
-
-echo "ciao";
-//presi dal docker-compose.yml
-$host = 'db'; 
-$dbname = 'root_db'; 
-$user = 'user';
-$password = 'user';
-$port = 3306;
-
-$conn = new mysqli($host, $user, $password, $dbname, $port);
-
-if ($conn->connect_error) {
-    die("Errore di connessione: " . $conn->connect_error);
-}
+$conn = new mysqli('db', 'user', 'user', 'root_db', 3306);
+if ($conn->connect_error)
+    die("so morto: " . $conn->connect_error);
