@@ -7,6 +7,8 @@ $routes = [
         '/api/articoli/{categoria}' => 'gestisci_articoli_per_categoria',
         '/api/articoli/{categoria}/{sottocategoria}' => 'gestisci_articoli_per_sottocategoria',
         '/api/articoli/{categoria}/{sottocategoria}/{slug}' => 'gestisci_articolo',
+        '/api/articoli/categorie' => 'prendi_categorie',
+        '/api/articoli/{categoria}/sottocategorie' => 'prendi_sottocategorie'
     ],
     'POST' => [
         '/api/auth' => 'gestisci_autenticazione',
