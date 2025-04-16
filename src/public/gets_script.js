@@ -81,6 +81,6 @@ async function CaricaCategorie()
 /* aggiunge evento bottone cerca */
 document.getElementById("sottocategoria").addEventListener("change", Articoli);
 /* carico le categorie disponibili */
-await CaricaCategorie();
+CaricaCategorie();
 /* popolazione totale iniziale della tabella */
-await Articoli();
+Articoli();
