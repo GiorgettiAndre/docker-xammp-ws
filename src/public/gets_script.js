@@ -1,37 +1,45 @@
+/* funzione che prende i dati da una URL */
 async function getData(url)
 {
     try
     {
+        /* richiamo URL */
         const response = await fetch(url);
+        /* controllo errori */
         if(!response.ok)
             throw new Error(`Response status: ${response.status}`);
+        /* ritorno il dato in formato JSON */
         return await response.json();
-
     }
     catch (error)
     {
+        /* errore */
         console.error(error.message);
         return [];
     }
 }
 
+/* funzione di aggiornamento tabellare */
 async function Articoli()
 {
+    /* prendo la categoria e sottocategoria scelti */
     const categoria = document.getElementById("categoria").value;
     const sottocategoria = document.getElementById("sottocategoria").value;
-
+    /* inizializzo tabella vuota */
     var data = [];
+    /* in base alle disponibilità dei parametri richiedo delle API o WS scecifiche */
     if(categoria != "" && sottocategoria != "")
         data = await getData("https://3000-idx-docker-xammp-ws-1744697601174.cluster-y34ecccqenfhcuavp7vbnxv7zk.cloudworkstations.dev/api/articoli/"+categoria+"/"+sottocategoria);
     else if(categoria != "")
         data = await getData("https://3000-idx-docker-xammp-ws-1744697601174.cluster-y34ecccqenfhcuavp7vbnxv7zk.cloudworkstations.dev/api/articoli/"+ categoria);
     else
         data = await getData("https://3000-idx-docker-xammp-ws-1744697601174.cluster-y34ecccqenfhcuavp7vbnxv7zk.cloudworkstations.dev/api/articoli");
-
+    /* se vuoto lo dico */
     if(data.length === 0)
         document.getElementById(id_tab).innerHTML = "Dati vuoti";
     else
     {
+        /* popolo la tabella */
         document.getElementById("tabella").innerHTML = "<thead> <tr> <th>Nome</th><th>Categoria</th><th>SottoCategoria</th><th>Prezzo</th> </tr> </thead>";
         data.forEach(element =>
         {
@@ -70,17 +78,9 @@ async function CaricaCategorie()
     document.getElementById("categoria").addEventListener("change", ChangeSottoCategoria);
 }
 
-/* setup della pagina */
-async function Setup()
-{
-    /* carico le categorie disponibili */
-    await CaricaCategorie();
-
-    /* aggiunge evento bottone cerca */
-    document.getElementById("sottocategoria").addEventListener("change", Articoli);
-
-    /* popolazione totale iniziale della tabella */
-    await Articoli();
-}
-
-window.onload = Setup;
+/* aggiunge evento bottone cerca */
+document.getElementById("sottocategoria").addEventListener("change", Articoli);
+/* carico le categorie disponibili */
+await CaricaCategorie();
+/* popolazione totale iniziale della tabella */
+await Articoli();
