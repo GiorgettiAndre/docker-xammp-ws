@@ -34,7 +34,7 @@ function gestisci_elenco_articoli() { include_once "articoli.php"; }
 function gestisci_articoli_per_categoria($categoria) { include_once "articoli.php"; }
 function gestisci_articoli_per_sottocategoria($categoria, $sottocategoria) { include_once "articoli.php"; }
 function prendi_categorie() { include_once "categorie.php"; }
-function prendi_sottocategorie($categoria) { include_once "sottocategorie.php"; }
+function prendi_sottocategorie($categoria) { include_once "categorie.php"; }
 
 function gestisci_articolo($categoria, $sottocategoria, $slug) {
     echo "Articolo: " . $categoria . "/" . $sottocategoria . "/" . $slug;

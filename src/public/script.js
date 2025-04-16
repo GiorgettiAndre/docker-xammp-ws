@@ -1,4 +1,7 @@
 const id_tab = "tabella";
+var null_option = document.createElement("option");
+null_option.value = "[null]";
+null_option.text = "[null]";
 
 async function getData(url)
 {
@@ -74,23 +77,12 @@ async function Articoli(categoria, sottocategoria)
     }
 }
 
-/* carico categorie nelle categorie selezionabili */
-const data = await getData("https://3000-idx-docker-xammp-ws-1744697601174.cluster-y34ecccqenfhcuavp7vbnxv7zk.cloudworkstations.dev/api/articoli/categorie");
-if(data.length > 0)
+/* aggiornamento delle sottocategorie */
+async function ChangeSottoCategoria()
 {
-    data.forEach(element =>
-    {
-        var option = document.createElement("option");
-        option.value = element.categoria;
-        option.text = element.categoria;
-        document.getElementById("categoria").appendChild(option);
-    });
-}
-
-/* aggiungo evento in cui ricarica le sottocategorie ad ogni categoria scelta */
-document.getElementById("categoria").addEventListener("change", async function()
-{
-    const data = await getData("https://3000-idx-docker-xammp-ws-1744697601174.cluster-y34ecccqenfhcuavp7vbnxv7zk.cloudworkstations.dev/api/articoli/"+this.value+"/sottocategoria");
+    const data = await getData("https://3000-idx-docker-xammp-ws-1744697601174.cluster-y34ecccqenfhcuavp7vbnxv7zk.cloudworkstations.dev/api/"+this.value+"/sottocategoria");
+    document.getElementById("sottocategoria").innerHTML = "";
+    document.getElementById("sottocategoria").appendChild(null_option);
     if(data.length > 0)
     {
         data.forEach(element =>
@@ -101,26 +93,56 @@ document.getElementById("categoria").addEventListener("change", async function()
             document.getElementById("sottocategoria").appendChild(option);
         });
     }
-});
+}
 
-/* aggiungo un opzione nullo alla categoria e alla sottocategoria */
-var option = document.createElement("option"); option.value = "[null]"; option.text = "[null]";
-document.getElementById("categoria").appendChild(option);
-document.getElementById("sottocategoria").appendChild(option);
-
-/* aggiunge evento bottone */
-document.getElementById("cerca_articolo").addEventListener("click", async function()
+/* ricerca articoli */
+async function ClickCerca()
 {
     const categoria = document.getElementById("categoria").value;
     const sottocategoria = document.getElementById("sottocategoria").value;
 
-    if(categoria === "")
-        Articoli();
-    else if(sottocategoria === "")
-        Articoli(categoria);
+    if(categoria === "" || categoria === "[null]")
+        await Articoli();
+    else if(sottocategoria === "" || sottocategoria === "[null]")
+        await Articoli(categoria);
     else
-        Articoli(categoria, sottocategoria);
-});
+        await Articoli(categoria, sottocategoria);
+}
 
-/* popolazione iniziale della tabella */
-Articoli();
+/* caricamento delle categorie */
+async function CaricaCategorie()
+{
+    const data = await getData("https://3000-idx-docker-xammp-ws-1744697601174.cluster-y34ecccqenfhcuavp7vbnxv7zk.cloudworkstations.dev/api/categorie");
+    if(data.length > 0)
+    {
+        data.forEach(element =>
+        {
+            var option = document.createElement("option");
+            option.value = element.categoria;
+            option.text = element.categoria;
+            document.getElementById("categoria").appendChild(option);
+        });
+    }
+}
+
+/* setup della pagina */
+async function Setup()
+{
+    /* aggiungo un opzione nullo alla categoria e alla sottocategoria */
+    document.getElementById("categoria").appendChild(null_option);
+    document.getElementById("sottocategoria").appendChild(null_option);
+
+    /* carico le categorie disponibili */
+    await CaricaCategorie();
+
+    /* aggiunge evento bottone cerca*/
+    document.getElementById("cerca_articolo").addEventListener("click", ClickCerca);
+
+    /* aggiungo evento in cui ricarica le sottocategorie ad ogni categoria scelta */
+    document.getElementById("categoria").addEventListener("change", ChangeSottoCategoria);
+
+    /* popolazione iniziale della tabella */
+    await Articoli();
+}
+
+await Setup();

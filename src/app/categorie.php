@@ -3,7 +3,10 @@ header("Content-Type: application/json");
 
 include_once "db.php";
 
-$row = $conn->query("SELECT categoria FROM articoli GROUP BY categoria;");
+if(isset($categoria))
+    $res = $conn->query("SELECT DISTINCT sottocategoria FROM articoli WHERE categoria = '$categoria';");
+else
+    $res = $conn->query("SELECT DISTINCT categoria FROM articoli;");
 
 $data = [];
 while($row = $res->fetch_assoc())
