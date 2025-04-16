@@ -1,19 +1,11 @@
-const id_tab = "tabella";
-var null_option = document.createElement("option");
-null_option.value = "[null]";
-null_option.text = "[null]";
-
 async function getData(url)
 {
     try
     {
         const response = await fetch(url);
-
         if(!response.ok)
             throw new Error(`Response status: ${response.status}`);
-
-        const data = await response.json();
-        return data;
+        return await response.json();
 
     }
     catch (error)
@@ -25,54 +17,27 @@ async function getData(url)
 
 async function Articoli()
 {
-    const data = await getData("https://3000-idx-docker-xammp-ws-1744697601174.cluster-y34ecccqenfhcuavp7vbnxv7zk.cloudworkstations.dev/api/articoli");
+    const categoria = document.getElementById("categoria").value;
+    const sottocategoria = document.getElementById("sottocategoria").value;
+
+    var data = [];
+    if(categoria != "" && sottocategoria != "")
+        data = await getData("https://3000-idx-docker-xammp-ws-1744697601174.cluster-y34ecccqenfhcuavp7vbnxv7zk.cloudworkstations.dev/api/articoli/"+categoria+"/"+sottocategoria);
+    else if(categoria != "")
+        data = await getData("https://3000-idx-docker-xammp-ws-1744697601174.cluster-y34ecccqenfhcuavp7vbnxv7zk.cloudworkstations.dev/api/articoli/"+ categoria);
+    else
+        data = await getData("https://3000-idx-docker-xammp-ws-1744697601174.cluster-y34ecccqenfhcuavp7vbnxv7zk.cloudworkstations.dev/api/articoli");
 
     if(data.length === 0)
         document.getElementById(id_tab).innerHTML = "Dati vuoti";
     else
     {
-        document.getElementById(id_tab).innerHTML = "<thead> <tr> <th>Nome</th><th>Categoria</th><th>SottoCategoria</th><th>Prezzo</th> </tr> </thead>";
+        document.getElementById("tabella").innerHTML = "<thead> <tr> <th>Nome</th><th>Categoria</th><th>SottoCategoria</th><th>Prezzo</th> </tr> </thead>";
         data.forEach(element =>
         {
             var row = document.createElement("tr");
             row.innerHTML = `<td>${element.Nome}</td><td>${element.Categoria}</td><td>${element.SottoCategoria}</td><td>${element.Prezzo}</td>`;
-            document.getElementById(id_tab).appendChild(row);
-        });
-    }
-}
-
-async function Articoli(categoria)
-{
-    const data = await getData("https://3000-idx-docker-xammp-ws-1744697601174.cluster-y34ecccqenfhcuavp7vbnxv7zk.cloudworkstations.dev/api/articoli?categoria=" + categoria);
-
-    if(data.length === 0)
-        document.getElementById(id_tab).innerHTML = "Dati vuoti";
-    else
-    {
-        document.getElementById(id_tab).innerHTML = "<thead> <tr> <th>Nome</th><th>SottoCategoria</th><th>Prezzo</th> </tr> </thead>";
-        data.forEach(element =>
-        {
-            var row = document.createElement("tr");
-            row.innerHTML = `<td>${element.Nome}</td><td>${element.SottoCategoria}</td><td>${element.Prezzo}</td>`;
-            document.getElementById(id_tab).appendChild(row);
-        });
-    }
-}
-
-async function Articoli(categoria, sottocategoria)
-{
-    const data = await getData("https://3000-idx-docker-xammp-ws-1744697601174.cluster-y34ecccqenfhcuavp7vbnxv7zk.cloudworkstations.dev/api/articoli?categoria="+categoria+"&sottocategoria="+sottocategoria);
-
-    if(data.length === 0)
-        document.getElementById(id_tab).innerHTML = "Dati vuoti";
-    else
-    {
-        document.getElementById(id_tab).innerHTML = "<thead> <tr> <th>Nome</th><th>Prezzo</th> </tr> </thead>";
-        data.forEach(element =>
-        {
-            var row = document.createElement("tr");
-            row.innerHTML = `<td>${element.Nome}</td><td>${element.Prezzo}</td>`;
-            document.getElementById(id_tab).appendChild(row);
+            document.getElementById("tabella").appendChild(row);
         });
     }
 }
@@ -80,69 +45,42 @@ async function Articoli(categoria, sottocategoria)
 /* aggiornamento delle sottocategorie */
 async function ChangeSottoCategoria()
 {
-    const data = await getData("https://3000-idx-docker-xammp-ws-1744697601174.cluster-y34ecccqenfhcuavp7vbnxv7zk.cloudworkstations.dev/api/"+this.value+"/sottocategoria");
-    document.getElementById("sottocategoria").innerHTML = "";
-    document.getElementById("sottocategoria").appendChild(null_option);
-    if(data.length > 0)
-    {
-        data.forEach(element =>
-        {
-            var option = document.createElement("option");
-            option.value = element.sottocategoria;
-            option.text = element.sottocategoria;
-            document.getElementById("sottocategoria").appendChild(option);
-        });
-    }
-}
-
-/* ricerca articoli */
-async function ClickCerca()
-{
+    /* inizializzo con un'opzione nullo */
+    document.getElementById("sottocategoria").innerHTML = '<option value=""> --- </option>';
+    /* prendo la categoria selezionata */
     const categoria = document.getElementById("categoria").value;
-    const sottocategoria = document.getElementById("sottocategoria").value;
-
-    if(categoria === "" || categoria === "[null]")
-        await Articoli();
-    else if(sottocategoria === "" || sottocategoria === "[null]")
-        await Articoli(categoria);
-    else
-        await Articoli(categoria, sottocategoria);
+    /* prendo i dati delle categorie in base alla categoria */
+    const data = await getData("https://3000-idx-docker-xammp-ws-1744697601174.cluster-y34ecccqenfhcuavp7vbnxv7zk.cloudworkstations.dev/api/"+categoria+"/sottocategorie");
+    /* aggiungo le sottocategorie */
+    if(data.length>0) data.forEach(element=>{document.getElementById("sottocategoria").innerHTML+=`<option value="${element.sottocategoria}">${element.sottocategoria}</option>`;});
+    /* aggiorno la tabella */
+    await Articoli();
 }
 
 /* caricamento delle categorie */
 async function CaricaCategorie()
 {
+    /* inizializzo con un'opzione nullo */
+    document.getElementById("categoria").innerHTML = '<option value=""> --- </option>';
+    /* prendo i dati delle categorie */
     const data = await getData("https://3000-idx-docker-xammp-ws-1744697601174.cluster-y34ecccqenfhcuavp7vbnxv7zk.cloudworkstations.dev/api/categorie");
-    if(data.length > 0)
-    {
-        data.forEach(element =>
-        {
-            var option = document.createElement("option");
-            option.value = element.categoria;
-            option.text = element.categoria;
-            document.getElementById("categoria").appendChild(option);
-        });
-    }
+    /* aggiungo le categorie */
+    if(data.length > 0) data.forEach(element => { document.getElementById("categoria").innerHTML += `<option value="${element.categoria}">${element.categoria}</option>`; });
+    /* aggiungo evento in cui ricarica le sottocategorie ad ogni categoria scelta */
+    document.getElementById("categoria").addEventListener("change", ChangeSottoCategoria);
 }
 
 /* setup della pagina */
 async function Setup()
 {
-    /* aggiungo un opzione nullo alla categoria e alla sottocategoria */
-    document.getElementById("categoria").appendChild(null_option);
-    document.getElementById("sottocategoria").appendChild(null_option);
-
     /* carico le categorie disponibili */
     await CaricaCategorie();
 
-    /* aggiunge evento bottone cerca*/
-    document.getElementById("cerca_articolo").addEventListener("click", ClickCerca);
+    /* aggiunge evento bottone cerca */
+    document.getElementById("sottocategoria").addEventListener("change", Articoli);
 
-    /* aggiungo evento in cui ricarica le sottocategorie ad ogni categoria scelta */
-    document.getElementById("categoria").addEventListener("change", ChangeSottoCategoria);
-
-    /* popolazione iniziale della tabella */
+    /* popolazione totale iniziale della tabella */
     await Articoli();
 }
 
-await Setup();
+window.onload = Setup;
